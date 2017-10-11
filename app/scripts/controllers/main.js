@@ -139,6 +139,7 @@ angular.module('sitemapGeneratorApp')
           // no script on page
           console.log('ERROR 0001','you must include a script on your page');
           $scope.pageError($scope.currentUrl);
+          $scope.getNextUrl();
         }
       }, 9000);
     }
@@ -345,16 +346,34 @@ angular.module('sitemapGeneratorApp')
       }
     }
 
-    /* Download */
+     /* Download */
     $scope.download = function(link) {
       console.log('download');
       var txt = '<?xml version="1.0" encoding="UTF-8"?>';
       txt = txt + '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
       angular.forEach($scope.links, function(value, key){
-        txt = txt + '<url><loc>' + value.url + '</loc><priority>0.5</priority></url>';
+        txt = txt + '<url><loc>' + $scope.getEncodeURL(value.url) + '</loc><priority>0.5</priority></url>';
       });
       txt = txt + '</urlset>';
-      window.open( 'data:text/xml;charset=utf-8,' + encodeURIComponent(txt),'_blank');
+      var myWindow = window.open( '' ,'_blank');
+      myWindow.document.write(txt);
     };
+
+    $scope.getEncodeURL = function(url){
+        var splitUrl = url.split('/');
+        if(splitUrl.length <= 0){
+            return url;
+        }
+        
+        var finalURL = splitUrl[0] + '/';
+        for(var i = 1; i < splitUrl.length; i++){
+            finalURL += encodeURIComponent(splitUrl[i]);
+
+            if(i < splitUrl.length - 1){
+                finalURL += '/';                
+            }
+        }
+        return finalURL;
+    }
   }]);
 
